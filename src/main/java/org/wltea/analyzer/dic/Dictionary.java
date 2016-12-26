@@ -32,15 +32,14 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
 
-import org.wltea.analyzer.cfg.Configuration;
-import org.wltea.analyzer.cfg.Configuration;
+import org.apache.log4j.Logger;
 import org.wltea.analyzer.cfg.Configuration;
 
 /**
  * 词典管理类,单子模式
  */
 public class Dictionary {
-
+	private static Logger logger = Logger.getLogger(Dictionary.class);
 
 	/*
 	 * 词典单子实例
@@ -71,6 +70,7 @@ public class Dictionary {
 		this.loadMainDict();
 		this.loadStopWordDict();
 		this.loadQuantifierDict();
+		logger.warn("==================  load dictionary  ==================");
 	}
 	
 	/**
@@ -213,7 +213,7 @@ public class Dictionary {
 			} while (theWord != null);
 			
 		} catch (IOException ioe) {
-			System.err.println("Main Dictionary loading exception.");
+			logger.error("Main Dictionary loading exception.");
 			ioe.printStackTrace();
 			
 		}finally{
@@ -240,7 +240,7 @@ public class Dictionary {
 			InputStream is = null;
 			for(String extDictName : extDictFiles){
 				//读取扩展词典文件
-				System.out.println("加载扩展词典：" + extDictName);
+				logger.warn("加载扩展词典：" + extDictName);
 				is = this.getClass().getClassLoader().getResourceAsStream(extDictName);
 				//如果找不到扩展的字典，则忽略
 				if(is == null){
@@ -253,13 +253,13 @@ public class Dictionary {
 						theWord = br.readLine();
 						if (theWord != null && !"".equals(theWord.trim())) {
 							//加载扩展词典数据到主内存词典中
-							//System.out.println(theWord);
+							//logger.warn(theWord);
 							_MainDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
 						}
 					} while (theWord != null);
 					
 				} catch (IOException ioe) {
-					System.err.println("Extension Dictionary loading exception.");
+					logger.error("Extension Dictionary loading exception.");
 					ioe.printStackTrace();
 					
 				}finally{
@@ -287,7 +287,7 @@ public class Dictionary {
 		if(extStopWordDictFiles != null){
 			InputStream is = null;
 			for(String extStopWordDictName : extStopWordDictFiles){
-				System.out.println("加载扩展停止词典：" + extStopWordDictName);
+				logger.warn("加载扩展停止词典：" + extStopWordDictName);
 				//读取扩展词典文件
 				is = this.getClass().getClassLoader().getResourceAsStream(extStopWordDictName);
 				//如果找不到扩展的字典，则忽略
@@ -300,14 +300,14 @@ public class Dictionary {
 					do {
 						theWord = br.readLine();
 						if (theWord != null && !"".equals(theWord.trim())) {
-							//System.out.println(theWord);
+							//logger.warn(theWord);
 							//加载扩展停止词典数据到内存中
 							_StopWordDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
 						}
 					} while (theWord != null);
 					
 				} catch (IOException ioe) {
-					System.err.println("Extension Stop word Dictionary loading exception.");
+					logger.error("Extension Stop word Dictionary loading exception.");
 					ioe.printStackTrace();
 					
 				}finally{
@@ -346,7 +346,7 @@ public class Dictionary {
 			} while (theWord != null);
 			
 		} catch (IOException ioe) {
-			System.err.println("Quantifier Dictionary loading exception.");
+			logger.error("Quantifier Dictionary loading exception.");
 			ioe.printStackTrace();
 			
 		}finally{
