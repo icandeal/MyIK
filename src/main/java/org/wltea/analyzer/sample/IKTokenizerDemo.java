@@ -17,7 +17,7 @@ import java.util.Map;
  * Created by yuchunfan on 2016/12/26.
  */
 public class IKTokenizerDemo {
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         params.put("useSmart","true");
         IKTokenizerFactory tokenizerFactory = new IKTokenizerFactory(params);

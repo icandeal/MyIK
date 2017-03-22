@@ -1,14 +1,21 @@
 package org.wltea.analyzer.lucene;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.apache.lucene.analysis.util.ClasspathResourceLoader;
 import org.apache.lucene.analysis.util.FilesystemResourceLoader;
 import org.apache.lucene.analysis.util.ResourceLoader;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +23,7 @@ import java.util.Map;
  * Created by yuchunfan on 2016/12/26.
  */
 public class IKSynonymAnalyzer extends Analyzer {
-    private static Logger logger = Logger.getLogger(IKAnalyzer.class);
+    private static Logger logger = Logger.getLogger(IKSynonymAnalyzer.class);
 
     private boolean useSmart;
 
@@ -35,6 +42,7 @@ public class IKSynonymAnalyzer extends Analyzer {
      */
     public IKSynonymAnalyzer(){
         this(false);
+        logger.warn("Init a default IKSynonymAnalyzer with useSmart = false");
     }
 
     /**
@@ -45,7 +53,7 @@ public class IKSynonymAnalyzer extends Analyzer {
     public IKSynonymAnalyzer(boolean useSmart){
         super();
         this.useSmart = useSmart;
-        logger.warn("==========================================11"+ this.useSmart +"====================================");
+        logger.warn("Init a new Boolean IKSynonymAnalyzer with useSmart = "+ this.useSmart);
     }
 
     /**
@@ -57,7 +65,7 @@ public class IKSynonymAnalyzer extends Analyzer {
         super();
         String _arg = args.get("useSmart");
         this.useSmart = Boolean.parseBoolean(_arg);
-        logger.warn("==========================================22"+ useSmart +"====================================");
+        logger.warn("Init a new Map IKSynonymAnalyzer with useSmart = "+ this.useSmart);
     }
 
     /**
@@ -68,11 +76,15 @@ public class IKSynonymAnalyzer extends Analyzer {
         Tokenizer token=new IKTokenizer(fieldName, true);
         Map paramsMap=new HashMap();
         paramsMap.put("synonyms", "synonyms.txt");
+        logger.warn("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"+ new SimpleDateFormat("HH:mm:ss").format(new Date()));
         SynonymFilterFactory factory=new SynonymFilterFactory(paramsMap);
-        ResourceLoader loader = new ClasspathResourceLoader();
+//        ResourceLoader loader = new ClasspathResourceLoader();
         try {
+            ResourceLoader loader = new HDFSResourceLoader("hdfs://t45.test.etiantian.com:8020/tmp/data/");
             factory.inform(loader);
         } catch (IOException e) {
+            logger.error(e);
+        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
         return new TokenStreamComponents(token, factory.create(token));

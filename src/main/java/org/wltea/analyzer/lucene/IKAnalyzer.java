@@ -25,6 +25,7 @@
 package org.wltea.analyzer.lucene;
 
 import java.io.Reader;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -55,6 +56,7 @@ public final class IKAnalyzer extends Analyzer{
 	 */
 	public IKAnalyzer(){
 		this(false);
+		logger.warn("Init a default IKAnalyzer with useSmart = false");
 	}
 
 	/**
@@ -65,7 +67,14 @@ public final class IKAnalyzer extends Analyzer{
 	public IKAnalyzer(boolean useSmart){
 		super();
 		this.useSmart = useSmart;
-		logger.warn("=========================================="+ useSmart +"====================================");
+		logger.warn("Init a new Boolean IKAnalyzer with useSmart = "+ this.useSmart);
+	}
+
+	public IKAnalyzer(Map<String, String> args){
+		super();
+		String _arg = args.get("useSmart");
+		this.useSmart = Boolean.parseBoolean(_arg);
+		logger.warn("Init a new Map IKAnalyzer with useSmart = "+ this.useSmart);
 	}
 
 	/**
